@@ -9,8 +9,8 @@ from antlr4 import InputStream, CommonTokenStream, Token
 from antlr4.tree.Tree import ParseTree
 from antlr4.error.ErrorListener import ErrorListener
 
-from .MyGrammarParser import MyGrammarParser
-from .MyGrammarLexer import MyGrammarLexer
+from .KotlinParser import KotlinParser
+from .KotlinLexer import KotlinLexer
 
 #-------------------------------------------------------------------------------
 # User API
@@ -89,7 +89,7 @@ def parse(stream:InputStream, entry_rule_name:str, sa_err_listener:SA_ErrorListe
 #-------------------------------------------------------------------------------
 
 try:
-    from . import sa_mygrammar_cpp_parser
+    from . import sa_kotlin_cpp_parser
 except ImportError:
     USE_CPP_IMPLEMENTATION = False
 
@@ -102,7 +102,7 @@ def _cpp_parse(stream:InputStream, entry_rule_name:str, sa_err_listener:SA_Error
     if sa_err_listener is not None and not isinstance(sa_err_listener, SA_ErrorListener):
         raise TypeError("'sa_err_listener' shall be an instance of SA_ErrorListener or None")
 
-    return sa_mygrammar_cpp_parser.do_parse(MyGrammarParser, stream, entry_rule_name, sa_err_listener)
+    return sa_kotlin_cpp_parser.do_parse(KotlinParser, stream, entry_rule_name, sa_err_listener)
 
 
 #-------------------------------------------------------------------------------
@@ -137,14 +137,14 @@ def _py_parse(stream:InputStream, entry_rule_name:str, sa_err_listener:SA_ErrorL
         err_listener = _FallbackErrorTranslator(sa_err_listener, stream)
 
     # Lex
-    lexer = MyGrammarLexer(stream)
+    lexer = KotlinLexer(stream)
     if sa_err_listener is not None:
         lexer.removeErrorListeners()
         lexer.addErrorListener(err_listener)
     token_stream = CommonTokenStream(lexer)
 
     # Parse
-    parser = MyGrammarParser(token_stream)
+    parser = KotlinParser(token_stream)
     if sa_err_listener is not None:
         parser.removeErrorListeners()
         parser.addErrorListener(err_listener)
